@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 
 function Header(props) {
   return (
     <header className="container">
-			<h1 className="m--1 g--4 g-s--12 docsHeader">{props.name}</h1>
-		</header>
+      <h1 className="m--1 g--4 g-s--12 docsHeader">{props.name}</h1>
+    </header>
   );
 }
 

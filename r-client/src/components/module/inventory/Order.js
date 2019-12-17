@@ -1,12 +1,11 @@
-import React, {Fragment} from 'react';
+import React, { Fragment } from "react";
 
 function Order(props) {
-  props.setName('Order');
+  props.setName("Order");
   return (
     <Fragment>
-        <h1>Order</h1>
+      <h1>Order</h1>
     </Fragment>
-
   );
 }
 

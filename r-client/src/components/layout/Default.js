@@ -1,11 +1,11 @@
-import React, {Fragment} from 'react';
+import React, { Fragment } from "react";
 
 function Default(props) {
-  props.setName('Default');
+  props.setName("Default");
   return (
     <Fragment>
-        <h1>Default Content</h1>
-    </Fragment>  
+      <h1>Default Content</h1>
+    </Fragment>
   );
 }
 
