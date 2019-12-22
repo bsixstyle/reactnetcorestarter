@@ -1,41 +1,66 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebApi.Entities;
 using WebApi.Helpers;
-using WebApi.Services;
 
 namespace WebApi.Controllers.Api.Master
 {
     [Route("[controller]")]
-    [ApiController]
     [Authorize]
+    [ApiController]
     public class SuppliersController : ControllerBase
     {
-        private ISupplierSerivce _supplier;
+        private readonly DataContext _context;
 
-        public SuppliersController(ISupplierSerivce supplier)
+        public SuppliersController(DataContext context)
         {
-            _supplier = supplier;
+            _context = context;
         }
 
-        // GET: /Suppliers
+        // GET: api/Suppliers
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<Supplier>>> GetSupplier([FromQuery]Parameters parameters)
+        //{
+        //    var suppliers = _context.Supplier.AsQueryable();
+        //    var total = await suppliers.CountAsync();
+        //    int skip = (parameters.PageNo - 1) * parameters.PageSize;
+
+        //    if (!string.IsNullOrEmpty(parameters.Filter))
+        //    {
+        //        suppliers = suppliers.Where(o => o.Name.ToLower().Trim().Equals(parameters.Filter));
+        //    }
+
+        //    var _suppliers = await suppliers
+        //        .OrderBy(c => c.Id)
+        //        .Skip(skip)
+        //        .Take(parameters.PageSize)
+        //        .ToListAsync();
+
+        //    return Ok(new PagedResult<Supplier>(_suppliers, parameters.Filter, parameters.PageNo, parameters.PageSize, total));
+        //}
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Supplier>>> GetSupplier()
+        public async Task<ActionResult<IEnumerable<Supplier>>> GetSupplier(string filter, int? totalRendered)
         {
-            var suppliers = _supplier.GetSupplier().AsQueryable();
-            return await suppliers.ToListAsync();
+            var _supplier = _context.Supplier.Where(o => o.UserId == User.Identity.Name).AsQueryable();
+
+            _supplier = (string.IsNullOrEmpty(filter)) ? _supplier : _supplier.Where(o => o.Name.ToLower().Trim().Contains(filter.ToLower().Trim()));
+            _supplier = (totalRendered == null) ? _supplier.Take(10) : _supplier.Skip(totalRendered.Value).Take(10);
+
+            return await _supplier.ToListAsync();
         }
 
-        // GET: /Suppliers/5
+        // GET: api/Suppliers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Supplier>> GetSupplier(string id)
         {
-            var supplier = await _supplier.GetById(id, User.Identity.Name);
+            var supplier = await _context.Supplier.FindAsync(id);
 
             if (supplier == null)
             {
@@ -45,59 +70,65 @@ namespace WebApi.Controllers.Api.Master
             return supplier;
         }
 
-        // PUT: /Suppliers/5
+        // PUT: api/Suppliers/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSupplier(string id, Supplier supplier)
         {
-           
             if (id != supplier.Id)
             {
                 return BadRequest();
             }
 
+            _context.Entry(supplier).State = EntityState.Modified;
+
             try
             {
-                // can add additional security 
-
-                if (User.Identity.Name == supplier.UserId)
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!SupplierExists(id))
                 {
-                    await _supplier.Update(supplier);
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
                 }
             }
-            catch (AppException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
 
-            return Ok();
+            return NoContent();
         }
 
-        // POST: /Suppliers
+        // POST: api/Suppliers
         [HttpPost]
         public async Task<ActionResult<Supplier>> PostSupplier(Supplier supplier)
         {
-            if (User.Identity.Name == supplier.UserId)
-            {
-                await _supplier.Create(supplier);
-            }               
+            _context.Supplier.Add(supplier);
+            await _context.SaveChangesAsync();
+
             return CreatedAtAction("GetSupplier", new { id = supplier.Id }, supplier);
         }
 
-        // DELETE: /Suppliers/5
+        // DELETE: api/Suppliers/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteSupplier(string id)
+        public async Task<ActionResult<Supplier>> DeleteSupplier(string id)
         {
-            try
+            var supplier = await _context.Supplier.FindAsync(id);
+            if (supplier == null)
             {
-                await _supplier.Delete(id, User.Identity.Name);
-            }
-            catch (AppException ex)
-            {
-                return BadRequest(new { message = ex.Message });
+                return NotFound();
             }
 
+            _context.Supplier.Remove(supplier);
+            await _context.SaveChangesAsync();
 
-            return Ok();
+            return supplier;
+        }
+
+        private bool SupplierExists(string id)
+        {
+            return _context.Supplier.Any(e => e.Id == id);
         }
     }
 }

@@ -19,9 +19,11 @@ function Login(props) {
 
   return (
     <Fragment>
-      <p>Udah punya account cuy? login dulu lah :)</p>
-      <div className="card g--4 g-m--6 g-s--10 g-t--12">
+      <div className="c3">
+        <h3>Udah punya account cuy? login dulu lah :)</h3>
+        <hr />
         <input
+          required
           type="email"
           placeholder="Email"
           value={loginUser.userName}
@@ -29,7 +31,10 @@ function Login(props) {
             setLoginUser({ ...loginUser, userName: event.target.value })
           }
         />
+        <br />
+        <br />
         <input
+          required
           type="password"
           placeholder="Password"
           value={loginUser.password}
@@ -37,9 +42,9 @@ function Login(props) {
             setLoginUser({ ...loginUser, password: event.target.value })
           }
         />
-        <button className="btn--raised btn--blue" onClick={login}>
-          Login
-        </button>
+        <br />
+        <br />
+        <button onClick={login}>Login</button>
       </div>
     </Fragment>
   );

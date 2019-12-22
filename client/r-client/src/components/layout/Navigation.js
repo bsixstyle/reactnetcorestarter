@@ -18,36 +18,34 @@ function Navigation(props) {
 
   return (
     <Fragment>
+      <label className="sidebar" htmlFor="sidebar">
+        &#8801;
+      </label>
       <input
+        className="sidebar"
         type="checkbox"
-        id="nav--super-vertical-responsive"
+        id="sidebar"
         checked={showMenu}
         onChange={elem => setShowMenu(elem.target.checked)}
       />
-      <label htmlFor="nav--super-vertical-responsive">&#8801; Menu</label>
-      <aside className="nav--super-vertical g--2 g-m--3 g-s--6 g-t--12 no-margin-vertical">
-        <div className="g--12 logo-area no-margin-vertical">
-          <Link onClick={hideMenu} to="/">
-            <h4 className="color--black no-margin-vertical">Bsix</h4>
-          </Link>
-        </div>
-        <nav className="g--12 no-margin-vertical">
+      <aside className="c2">
+        <div className="container">
+          <h3>
+            <Link onClick={hideMenu} to="/">
+              BSIXSTYLE
+            </Link>
+          </h3>
+          <hr />
           {props.isLoggedIn ? (
             <Fragment>
-              <Link onClick={hideMenu} to="/">
-                Hi <b>{UserServices.getCurrentUser().firstName}</b>{" "}
-              </Link>
               <Menu hideMenu={hideMenu} />
-              <Link onClick={logout} to="/login">
-                Logout
-              </Link>
             </Fragment>
           ) : (
             <Link onClick={hideMenu} to="/login">
               Login
             </Link>
           )}
-        </nav>
+        </div>
       </aside>
     </Fragment>
   );
