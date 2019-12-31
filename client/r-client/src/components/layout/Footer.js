@@ -1,13 +1,11 @@
-import React, { Fragment } from "react";
+import React from "react";
 function Footer() {
   return (
-    <Fragment>
-        <footer>
-            <div className="container">
-                <p>© BsixStyle 2019 </p>
-            </div>
-        </footer>
-    </Fragment>
+    <footer className="box">
+      <div className="container">
+        <p>Client Side crafted by <a className="link" href="http://bsixstyle.github.io">Bsixstyle author</a> </p>
+      </div>
+    </footer>
   );
 }
 

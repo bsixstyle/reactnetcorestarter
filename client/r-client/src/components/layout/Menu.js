@@ -19,7 +19,7 @@ function Menu(props) {
     if (menu.action === "#") {
       return (
         <div className="collapse" key={i}>
-          <input type="checkbox" id={"nav-" + menu.id}/>
+          <input type="checkbox" id={"nav-" + menu.id} checked={props.showMenu} />
           <label htmlFor={"nav-" + menu.id}>{menu.name}</label>
           <div>
             {_child.map((child, ic) => renderChild(child, ic))}

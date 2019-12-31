@@ -1,13 +1,13 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Link } from "react-router-dom"
-import SupplierServices from "../../../services/SupplierServices";
+import { Link } from "react-router-dom";
+import SupplierServices from "../../services/SupplierServices";
 
 function Supplier(props) {
   props.setName("Supplier");
 
   const [suppliers, setSuppliers] = useState(null);
   const [parameters, setParameters] = useState({
-    filter: '',
+    filter: "",
     totalRendered: 0
   });
 
@@ -15,13 +15,15 @@ function Supplier(props) {
     const InitialSuppliers = async () => {
       await getSuppliers();
     };
-    if (!suppliers) InitialSuppliers();
+    if (!suppliers) {
+      InitialSuppliers();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [suppliers]);
 
   const getSuppliers = async () => {
     let _response = await SupplierServices.getSuppliers(parameters);
-
-    if (suppliers !== null) setSuppliers([...suppliers, ..._response]);
+    if (suppliers) setSuppliers([...suppliers, ..._response]);
     else setSuppliers(_response);
 
     setParameters({
@@ -30,26 +32,26 @@ function Supplier(props) {
     });
   };
 
-  const search = async () => {
-    setParameters({ ...parameters, totalRendered: 0 });
+  const search = () => {
     setSuppliers(null);
+    setParameters({ ...parameters, totalRendered: 0 });
   };
 
   const renderSupplier = (supplier, i) => (
-    <Fragment key={i}>
-      <tr>
-        <td>{supplier.name}</td>
-        <td>{supplier.phone}</td>
-        <td>{supplier.address}</td>
-        <td><Link className="button" to="/">Edit</Link></td>
-      </tr>
-    </Fragment>
+    <tr key={i}>
+      <td data-label="Name">{supplier.name}</td>
+      <td data-label="Phone">{supplier.phone}</td>
+      <td data-label="Address">{supplier.address}</td>
+      <td>
+        <Link className="button orange" to="/">
+          Edit
+        </Link>
+      </td>
+    </tr>
   );
 
   return (
     <Fragment>
-      <h1>Supplier</h1>
-      <hr />
       <input
         type="text"
         value={parameters.filter}
@@ -65,17 +67,20 @@ function Supplier(props) {
       />
       <br />
       <br />
+      <button>Create New</button>
+      <br />
+      <br />
       {!suppliers ? (
         <p>Loading...</p>
       ) : (
         <Fragment>
-          <table>
+          <table className="responsive">
             <thead>
               <tr>
-                <td>Name</td>
-                <td>Phone</td>
-                <td>Address</td>
-                <td>Action</td>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
